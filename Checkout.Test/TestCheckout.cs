@@ -1,3 +1,5 @@
+using Checkout.Core.Base.Implementation;
+
 namespace Checkout.Test
 {
     public class TestCheckout
@@ -13,7 +15,7 @@ namespace Checkout.Test
                 ["D"] = new PricingRule(15)
             };
 
-            var checkout = new Checkout(pricingRules);
+            var checkout = new Core.Base.Implementation.Checkout(pricingRules);
             checkout.Scan("B");
             checkout.Scan("A");
             checkout.Scan("B");
