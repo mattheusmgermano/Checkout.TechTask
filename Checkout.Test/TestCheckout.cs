@@ -9,10 +9,10 @@ namespace Checkout.Test
         {
             var pricingRules = new Dictionary<string, PricingRule>
             {
-                ["A"] = new PricingRule(50, 3, 130),
-                ["B"] = new PricingRule(30, 2, 45),
-                ["C"] = new PricingRule(20),
-                ["D"] = new PricingRule(15)
+                ["A"] = new(50, 3, 130),
+                ["B"] = new(30, 2, 45),
+                ["C"] = new(20),
+                ["D"] = new(15)
             };
 
             var checkout = new Core.Base.Implementation.Checkout(pricingRules);
@@ -22,6 +22,31 @@ namespace Checkout.Test
 
             Assert.Equal(95, checkout.GetTotalPrice());
         }
+        [Fact]
+        public void TestInvalidPricingRule()
+        {
+            var pricingRules = new Dictionary<string, PricingRule>
+            {
+                ["A"] = new(-50),
+            };
 
+            var checkout = new Core.Base.Implementation.Checkout(pricingRules);
+            checkout.Scan("A");
+
+            Assert.Throws<InvalidOperationException>(() => checkout.GetTotalPrice());
+        }
+
+        [Fact]
+        public void TestInvalidSKU()
+        {
+            var pricingRules = new Dictionary<string, PricingRule>
+            {
+                ["A"] = new(50, 3, 130),
+            };
+
+            var checkout = new Core.Base.Implementation.Checkout(pricingRules);
+
+            Assert.Throws<ArgumentException>(() => checkout.Scan("Z"));
+        }
     }
 }
