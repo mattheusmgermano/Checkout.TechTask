@@ -19,6 +19,10 @@ namespace Checkout.Core.Base.Implementation
 
         public void Scan(string item)
         {
+            if (!_pricingRules.ContainsKey(item))
+            {
+                throw new ArgumentException($"Invalid SKU: {item} is not recognized.");
+            }
             _cart[item] = _cart.GetValueOrDefault(item, 0) + 1;
         }
 
@@ -28,7 +32,17 @@ namespace Checkout.Core.Base.Implementation
 
             foreach (var (item, count) in _cart)
             {
-                var rule = _pricingRules[item];
+                if (!_pricingRules.TryGetValue(item, out var rule))
+                {
+                    throw new InvalidOperationException($"Pricing rule for SKU: {item} is missing.");
+                }
+
+                if (rule.UnitPrice < 0 || (rule.SpecialCount.HasValue && (rule.SpecialCount <= 0 || rule.SpecialPrice <= 0)))
+                {
+                    throw new InvalidOperationException($"Invalid pricing rule fr SKU: {item}.");
+                }
+
+                rule = _pricingRules[item];
                 total += rule.SpecialCount switch
                 {
                     null or 0 => count * rule.UnitPrice,
