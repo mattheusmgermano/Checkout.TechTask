@@ -1,3 +1,5 @@
+using Checkout.Core.Base.Implementation;
+
 namespace Checkout.Test
 {
     public class TestCheckout
